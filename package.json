@@ -1,0 +1,19 @@
+{
+  "name": "difport",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "dotenv -- turbo run dev start:dev"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "dotenv-cli": "^7.1.0",
+    "prettier": "^2.3.2",
+    "turbo": "^1.8.6"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "pnpm": "^7.26.0"
+  }
+}
