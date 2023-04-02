@@ -2,6 +2,8 @@
 
 ## ✨Features
 
+- [ ] User
+- [ ] Workspace
 - [ ] Report
 - [ ] Billing
 - [ ] Payment

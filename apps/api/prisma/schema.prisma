@@ -1,0 +1,130 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int              @id @default(autoincrement())
+  username       String           @unique
+  email          String           @unique
+  password       String
+  firstName      String?
+  lastName       String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  ForgetPassword ForgetPassword[]
+  notifications  Notilfication[]
+  workspaces     WorkspaceUser[]
+
+  @@index([email, username])
+  @@map("users")
+}
+
+model ForgetPassword {
+  id        Int      @id @default(autoincrement())
+  token     String
+  count     Int
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("forget_passwords")
+}
+
+model Workspace {
+  id                Int               @id @default(autoincrement())
+  name              String
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  billingCategories BillingCategory[]
+  billings          Billing[]
+  notilfications    Notilfication[]
+  projects          Project[]
+  reportTrackings   ReportTracking[]
+  report            Report[]
+  teams             WorkspaceUser[]
+
+  @@map("workspaces")
+}
+
+model Project {
+  id          Int       @id @default(autoincrement())
+  workspaceId Int
+  name        String
+  detail      String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+
+  @@map("projects")
+}
+
+model WorkspaceUser {
+  id          Int       @id @default(autoincrement())
+  workspaceId Int
+  userId      Int
+  role        Role
+  user        User      @relation(fields: [userId], references: [id])
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+
+  @@map("workspace_users")
+}
+
+model BillingCategory {
+  id          Int       @id @default(autoincrement())
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+
+  @@map("billing_categories")
+}
+
+model Billing {
+  id          Int       @id @default(autoincrement())
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+
+  @@map("billings")
+}
+
+model Report {
+  id          Int       @id @default(autoincrement())
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+
+  @@map("reports")
+}
+
+model ReportTracking {
+  id          Int       @id @default(autoincrement())
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+
+  @@map("report_trackings")
+}
+
+model Notilfication {
+  id          Int        @id @default(autoincrement())
+  userId      Int
+  workspaceId Int?
+  user        User       @relation(fields: [userId], references: [id])
+  Workspace   Workspace? @relation(fields: [workspaceId], references: [id])
+
+  @@map("notifications")
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  USER
+}
+
+enum ReprotType {
+  NORMAL
+  EVENT
+}

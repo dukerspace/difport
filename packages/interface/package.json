@@ -1,0 +1,14 @@
+{
+  "name": "difport-interface",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "rm -rf dist && tsc"
+  },
+  "devDependencies": {
+    "typescript": "^4.7.4"
+  },
+  "author": "",
+  "license": "MIT"
+}
