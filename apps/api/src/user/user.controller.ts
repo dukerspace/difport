@@ -34,13 +34,10 @@ export class UserController {
       const response = new ResponseData(true, query)
       res.status(HttpStatus.OK).json(response)
     } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: error.message
-        },
-        HttpStatus.BAD_REQUEST
-      )
+      const message = {
+        message: error.message
+      }
+      throw new HttpException(message, HttpStatus.UNAUTHORIZED)
     }
   }
 
@@ -52,13 +49,10 @@ export class UserController {
       const response = new ResponsePaginate(true, query, page, limit, total)
       res.status(HttpStatus.OK).json(response)
     } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: error.message
-        },
-        HttpStatus.BAD_REQUEST
-      )
+      const message = {
+        message: error.message
+      }
+      throw new HttpException(message, HttpStatus.UNAUTHORIZED)
     }
   }
 
@@ -69,13 +63,10 @@ export class UserController {
       const response = new ResponseData(true, query)
       res.status(HttpStatus.OK).json(response)
     } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: error.message
-        },
-        HttpStatus.BAD_REQUEST
-      )
+      const message = {
+        message: error.message
+      }
+      throw new HttpException(message, HttpStatus.UNAUTHORIZED)
     }
   }
 
@@ -86,13 +77,10 @@ export class UserController {
       const response = new ResponseData(true, query)
       res.status(HttpStatus.OK).json(response)
     } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: error.message
-        },
-        HttpStatus.BAD_REQUEST
-      )
+      const message = {
+        message: error.message
+      }
+      throw new HttpException(message, HttpStatus.UNAUTHORIZED)
     }
   }
 
@@ -103,13 +91,10 @@ export class UserController {
       const response = new ResponseData(true, query)
       res.status(HttpStatus.OK).json(response)
     } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: error.message
-        },
-        HttpStatus.BAD_REQUEST
-      )
+      const message = {
+        message: error.message
+      }
+      throw new HttpException(message, HttpStatus.UNAUTHORIZED)
     }
   }
 }

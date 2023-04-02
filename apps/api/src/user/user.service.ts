@@ -9,8 +9,12 @@ export class UserService {
   constructor(private prisma: PrismaService) {}
 
   create(data: CreateUserDto): Promise<User> {
+    const insert = {
+      ...data,
+      failLoginCount: 0
+    }
     return this.prisma.user.create({
-      data: data
+      data: insert
     })
   }
 
