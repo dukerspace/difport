@@ -1,27 +1,18 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpException,
-  HttpStatus,
-  Post,
-  Request,
-  Res,
-  UseGuards
-} from '@nestjs/common'
+import { Body, Controller, HttpException, HttpStatus, Post, Res } from '@nestjs/common'
 import { ForgetPassword } from '@prisma/client'
 import { IAuth } from 'difport-interface'
 import { Response } from 'express'
 import { ResponseData } from '../utils/response'
 import { AuthService } from './auth.service'
+import { Public } from './decorators/public.decorator'
 import { AuthDTO } from './dto/auth.dto'
 import { ForgetPasswordDto } from './dto/forget-password.dto'
 import { ResetPasswordDto } from './dto/reset-password.dto'
-import { JwtAuthGuard } from './jwt-auth.guard'
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @Post('login')
   async auth(@Res() res: Response, @Body() body: AuthDTO) {
     try {
@@ -39,6 +30,7 @@ export class AuthController {
     }
   }
 
+  @Public()
   @Post('password/forget')
   async passwordForget(@Res() res: Response, @Body() body: ForgetPasswordDto) {
     try {
@@ -56,6 +48,7 @@ export class AuthController {
     }
   }
 
+  @Public()
   @Post('password/reset')
   async passwordReset(@Res() res: Response, @Body() body: ResetPasswordDto) {
     try {
@@ -71,11 +64,5 @@ export class AuthController {
       }
       throw new HttpException(message, HttpStatus.UNAUTHORIZED)
     }
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  getProfile(@Request() req) {
-    return req.user
   }
 }

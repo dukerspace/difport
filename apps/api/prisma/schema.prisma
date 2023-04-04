@@ -17,6 +17,8 @@ model User {
   createdAt      DateTime         @default(now())
   failLoginCount Int
   updatedAt      DateTime         @updatedAt
+  isDeleted      Boolean          @default(false)
+  role           Role
   ForgetPassword ForgetPassword[]
   notifications  Notilfication[]
   workspaces     WorkspaceUser[]
@@ -119,7 +121,6 @@ model Notilfication {
 }
 
 enum Role {
-  OWNER
   ADMIN
   USER
 }
