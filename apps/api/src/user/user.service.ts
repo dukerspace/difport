@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { User } from '@prisma/client'
+import { Role, User } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
@@ -11,23 +11,27 @@ export class UserService {
   create(data: CreateUserDto): Promise<User> {
     const insert = {
       ...data,
-      failLoginCount: 0
+      failLoginCount: 0,
+      role: Role.USER
     }
     return this.prisma.user.create({
       data: insert
     })
   }
 
-  findAll(page: number, limit: number): Promise<User[]> {
-    const skip: number = page == 0 ? 1 : limit * (page - 1)
+  findAll(page: number, limit: number, isDeleted: boolean): Promise<User[]> {
+    const skip: number = page == 1 ? 0 : limit * (page - 1)
     return this.prisma.user.findMany({
       skip: skip,
-      take: limit
+      take: limit,
+      where: {
+        isDeleted: isDeleted
+      }
     })
   }
 
   findOne(id: number): Promise<User> {
-    return this.prisma.user.findFirstOrThrow({
+    return this.prisma.user.findFirst({
       where: {
         id
       }
@@ -44,10 +48,14 @@ export class UserService {
   }
 
   remove(id: number): Promise<User> {
-    return this.prisma.user.delete({
+    const data = {
+      isDeleted: true
+    }
+    return this.prisma.user.update({
       where: {
         id
-      }
+      },
+      data: data
     })
   }
 

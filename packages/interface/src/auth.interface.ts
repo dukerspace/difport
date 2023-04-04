@@ -9,4 +9,5 @@ export interface IUserInfo {
 export interface IAuth {
   user: IUserInfo
   accessToken: string
+  refreshToken: string
 }
