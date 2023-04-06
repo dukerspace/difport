@@ -30,12 +30,17 @@ export class ResponseData<T> {
   }
 }
 
+export interface IErrorMessage {
+  field?: string
+  message: string[]
+}
+
 export class ErrorResponse {
   success: boolean
-  messages: any
+  errors: IErrorMessage[]
 
-  constructor(success = false, messages: any) {
+  constructor(success = false, errors: IErrorMessage[]) {
     this.success = success
-    this.messages = messages
+    this.errors = errors
   }
 }
