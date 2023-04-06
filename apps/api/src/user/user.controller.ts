@@ -30,6 +30,22 @@ export class UserController {
   @Post()
   async create(@Res() res: Response, @Body() body: CreateUserDto) {
     try {
+      const checkUser = await this.userService.findByUsername(body.username)
+      if (checkUser) {
+        const message = {
+          message: 'username is exists'
+        }
+        throw new HttpException(message, HttpStatus.BAD_REQUEST)
+      }
+
+      const checkEmail = await this.userService.findByEmail(body.email)
+      if (checkEmail) {
+        const message = {
+          message: 'email is exits'
+        }
+        throw new HttpException(message, HttpStatus.BAD_REQUEST)
+      }
+
       const password = hashSync(body.password, 10)
       const data = {
         ...body,
@@ -50,7 +66,7 @@ export class UserController {
   @Get(':id')
   async findOne(@Res() res: Response, @Param('id') id: number) {
     try {
-      const query = await this.userService.findOne(+id)
+      const query = await this.userService.findByID(+id)
       const response = new ResponseData(true, query)
       res.status(HttpStatus.OK).json(response)
     } catch (error) {

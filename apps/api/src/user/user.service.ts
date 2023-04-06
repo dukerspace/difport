@@ -30,10 +30,26 @@ export class UserService {
     })
   }
 
-  findOne(id: number): Promise<User> {
+  findByID(id: number): Promise<User> {
     return this.prisma.user.findFirst({
       where: {
         id
+      }
+    })
+  }
+
+  findByEmail(email: string): Promise<User> {
+    return this.prisma.user.findFirst({
+      where: {
+        email
+      }
+    })
+  }
+
+  findByUsername(username: string): Promise<User> {
+    return this.prisma.user.findFirst({
+      where: {
+        username
       }
     })
   }

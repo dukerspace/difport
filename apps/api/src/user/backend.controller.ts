@@ -19,7 +19,7 @@ import { Response } from 'express'
 import { UserRole } from 'src/auth/decorators/role.decorator'
 import { AuthGuard } from '../auth/guards/auth.guard'
 import { ResponseData, ResponsePaginate } from '../utils/response'
-import { CreateUserDto } from './dto/create-user.dto'
+import { CreateBackendDto } from './dto/create-backend.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { UserService } from './user.service'
 
@@ -30,13 +30,30 @@ export class AdminUserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  async create(@Res() res: Response, @Body() body: CreateUserDto) {
+  async create(@Res() res: Response, @Body() body: CreateBackendDto) {
     try {
+      const checkUser = await this.userService.findByUsername(body.username)
+      if (checkUser) {
+        const message = {
+          message: 'username is exists'
+        }
+        throw new HttpException(message, HttpStatus.BAD_REQUEST)
+      }
+
+      const checkEmail = await this.userService.findByEmail(body.email)
+      if (checkEmail) {
+        const message = {
+          message: 'email is exits'
+        }
+        throw new HttpException(message, HttpStatus.BAD_REQUEST)
+      }
+
       const password = hashSync(body.password, 10)
       const data = {
         ...body,
         password: password
       }
+
       const query = await this.userService.create(data)
       const response = new ResponseData(true, query)
       res.status(HttpStatus.OK).json(response)
@@ -57,7 +74,6 @@ export class AdminUserController {
     @Query('is_deleted') isDeleted: boolean
   ) {
     try {
-      console.log('xxxx', req.user)
       const query = await this.userService.findAll(+page || 1, +limit || 50, isDeleted)
       const total = await this.userService.count()
       const response = new ResponsePaginate(true, query, page, limit, total)
@@ -73,7 +89,7 @@ export class AdminUserController {
   @Get(':id')
   async findOne(@Res() res: Response, @Param('id') id: string) {
     try {
-      const query = await this.userService.findOne(+id)
+      const query = await this.userService.findByID(+id)
       const response = new ResponseData(true, query)
       res.status(HttpStatus.OK).json(response)
     } catch (error) {
@@ -101,6 +117,13 @@ export class AdminUserController {
   @Delete(':id')
   async remove(@Res() res: Response, @Param('id') id: string) {
     try {
+      const check = await this.userService.findByID(+id)
+      if (!check) {
+        const message = {
+          message: 'user not found'
+        }
+        throw new HttpException(message, HttpStatus.BAD_REQUEST)
+      }
       const query = await this.userService.remove(+id)
       const response = new ResponseData(true, query)
       res.status(HttpStatus.OK).json(response)
