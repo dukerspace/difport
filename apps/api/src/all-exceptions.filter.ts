@@ -12,6 +12,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
     // constructor method, thus we should resolve it here.
     const { httpAdapter } = this.httpAdapterHost
 
+    if (process.env.APP_ENV == 'develop') {
+      console.log('error', exception)
+    }
+
     const ctx = host.switchToHttp()
 
     const httpStatus =

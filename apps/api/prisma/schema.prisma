@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["extendedWhereUnique"]
 }
 
 datasource db {
@@ -40,7 +41,7 @@ model ForgetPassword {
 }
 
 model Workspace {
-  id                Int               @id @default(autoincrement())
+  id                String            @id @default(uuid())
   name              String
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
@@ -57,7 +58,7 @@ model Workspace {
 
 model Project {
   id          Int       @id @default(autoincrement())
-  workspaceId Int
+  workspaceId String
   name        String
   detail      String
   createdAt   DateTime  @default(now())
@@ -68,19 +69,19 @@ model Project {
 }
 
 model WorkspaceUser {
-  id          Int       @id @default(autoincrement())
-  workspaceId Int
+  id          Int           @id @default(autoincrement())
+  workspaceId String
   userId      Int
-  role        Role
-  user        User      @relation(fields: [userId], references: [id])
-  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  role        WorkspaceRole
+  user        User          @relation(fields: [userId], references: [id])
+  workspace   Workspace     @relation(fields: [workspaceId], references: [id])
 
   @@map("workspace_users")
 }
 
 model BillingCategory {
   id          Int       @id @default(autoincrement())
-  workspaceId Int
+  workspaceId String
   workspace   Workspace @relation(fields: [workspaceId], references: [id])
 
   @@map("billing_categories")
@@ -88,7 +89,7 @@ model BillingCategory {
 
 model Billing {
   id          Int       @id @default(autoincrement())
-  workspaceId Int
+  workspaceId String
   workspace   Workspace @relation(fields: [workspaceId], references: [id])
 
   @@map("billings")
@@ -96,7 +97,7 @@ model Billing {
 
 model Report {
   id          Int       @id @default(autoincrement())
-  workspaceId Int
+  workspaceId String
   workspace   Workspace @relation(fields: [workspaceId], references: [id])
 
   @@map("reports")
@@ -104,7 +105,7 @@ model Report {
 
 model ReportTracking {
   id          Int       @id @default(autoincrement())
-  workspaceId Int
+  workspaceId String
   workspace   Workspace @relation(fields: [workspaceId], references: [id])
 
   @@map("report_trackings")
@@ -113,7 +114,7 @@ model ReportTracking {
 model Notilfication {
   id          Int        @id @default(autoincrement())
   userId      Int
-  workspaceId Int?
+  workspaceId String?
   user        User       @relation(fields: [userId], references: [id])
   Workspace   Workspace? @relation(fields: [workspaceId], references: [id])
 
@@ -121,6 +122,12 @@ model Notilfication {
 }
 
 enum Role {
+  ADMIN
+  USER
+}
+
+enum WorkspaceRole {
+  OWNER
   ADMIN
   USER
 }

@@ -44,7 +44,7 @@ export class AuthController {
       const message = {
         message: error.message
       }
-      throw new HttpException(message, HttpStatus.UNAUTHORIZED)
+      throw new HttpException(message, HttpStatus.BAD_GATEWAY)
     }
   }
 
@@ -62,7 +62,7 @@ export class AuthController {
       const message = {
         message: error.message
       }
-      throw new HttpException(message, HttpStatus.UNAUTHORIZED)
+      throw new HttpException(message, HttpStatus.BAD_GATEWAY)
     }
   }
 }

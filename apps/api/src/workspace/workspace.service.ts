@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { Workspace } from '@prisma/client'
+import { Workspace, WorkspaceRole } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
 import { CreateWorkspaceDto } from './dto/create-workspace.dto'
 import { UpdateWorkspaceDto } from './dto/update-workspace.dto'
@@ -8,38 +8,63 @@ import { UpdateWorkspaceDto } from './dto/update-workspace.dto'
 export class WorkspaceService {
   constructor(private prisma: PrismaService) {}
 
-  create(data: CreateWorkspaceDto): Promise<Workspace> {
+  create(data: CreateWorkspaceDto, userId?: number): Promise<Workspace> {
     return this.prisma.workspace.create({
-      data: data
-    })
-  }
-
-  findAll(page: number, limit: number): Promise<Workspace[]> {
-    const skip: number = page == 0 ? 1 : limit * (page - 1)
-    return this.prisma.workspace.findMany({
-      skip: skip,
-      take: limit
-    })
-  }
-
-  findOne(id: number): Promise<Workspace> {
-    return this.prisma.workspace.findFirstOrThrow({
-      where: {
-        id
+      data: {
+        ...data,
+        teams: {
+          create: {
+            userId: userId,
+            role: WorkspaceRole.OWNER
+          }
+        }
       }
     })
   }
 
-  update(id: number, data: UpdateWorkspaceDto): Promise<Workspace> {
+  findAll(page: number, limit: number, userId?: number): Promise<Workspace[]> {
+    const skip: number = page == 0 ? 1 : limit * (page - 1)
+    return this.prisma.workspace.findMany({
+      skip: skip,
+      take: limit,
+      where: {
+        teams: {
+          every: {
+            userId: userId
+          }
+        }
+      }
+    })
+  }
+
+  findOne(id: string, userId?: number): Promise<Workspace> {
+    return this.prisma.workspace.findFirstOrThrow({
+      where: {
+        id,
+        teams: {
+          every: {
+            userId: userId
+          }
+        }
+      }
+    })
+  }
+
+  update(id: string, data: UpdateWorkspaceDto, userId?: number): Promise<Workspace> {
     return this.prisma.workspace.update({
       where: {
-        id
+        id,
+        teams: {
+          every: {
+            userId: userId
+          }
+        }
       },
       data
     })
   }
 
-  remove(id: number): Promise<Workspace> {
+  remove(id: string, userId?: number): Promise<Workspace> {
     return this.prisma.workspace.delete({
       where: {
         id
@@ -47,7 +72,9 @@ export class WorkspaceService {
     })
   }
 
-  count(): Promise<number> {
-    return this.prisma.workspace.count()
+  count(userId?: number): Promise<number> {
+    return this.prisma.workspace.count({
+      where: {}
+    })
   }
 }
