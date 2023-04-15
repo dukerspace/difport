@@ -15,7 +15,7 @@ import {
 import { hashSync } from 'bcrypt'
 import { Response } from 'express'
 import { Public } from 'src/auth/decorators/public.decorator'
-import { RequestWithUser } from 'src/auth/interfaces/user.interface'
+import { IRequestWithUser } from 'src/auth/interfaces/user.interface'
 import { AuthGuard } from '../auth/guards/auth.guard'
 import { ResponseData } from '../utils/response'
 import { CreateUserDto } from './dto/create-user.dto'
@@ -53,6 +53,7 @@ export class UserController {
       }
       const query = await this.userService.create(data)
       const response = new ResponseData(true, query)
+      res.status(322).json
       res.status(HttpStatus.OK).json(response)
     } catch (error) {
       const message = {
@@ -79,7 +80,7 @@ export class UserController {
 
   @UseGuards(AuthGuard)
   @Patch('/me')
-  async update(@Req() req: RequestWithUser, @Res() res: Response, @Body() body: UpdateUserDto) {
+  async update(@Req() req: IRequestWithUser, @Res() res: Response, @Body() body: UpdateUserDto) {
     try {
       const userId = req.user.id
       const query = await this.userService.update(userId, body)
@@ -95,7 +96,7 @@ export class UserController {
 
   @UseGuards(AuthGuard)
   @Delete('/me')
-  async remove(@Req() req: RequestWithUser, @Res() res: Response) {
+  async remove(@Req() req: IRequestWithUser, @Res() res: Response) {
     try {
       const userId: number = +req.user.id
       const query = await this.userService.remove(userId)
