@@ -22,9 +22,9 @@ export class WorkspaceService {
     })
   }
 
-  findAll(page: number, limit: number, userId?: number): Promise<Workspace[]> {
+  async findAll(page: number, limit: number, userId: number): Promise<Workspace[]> {
     const skip: number = page == 0 ? 1 : limit * (page - 1)
-    return this.prisma.workspace.findMany({
+    const result = await this.prisma.workspace.findMany({
       skip: skip,
       take: limit,
       where: {
@@ -35,28 +35,27 @@ export class WorkspaceService {
         }
       }
     })
+    return result
   }
 
-  findOne(id: string, userId?: number): Promise<Workspace> {
+  findOne(id: number): Promise<Workspace> {
     return this.prisma.workspace.findFirstOrThrow({
       where: {
-        id,
-        teams: {
-          every: {
-            userId: userId
-          }
-        }
+        id: id
       }
     })
   }
 
-  update(id: string, data: UpdateWorkspaceDto, userId?: number): Promise<Workspace> {
+  update(id: number, data: UpdateWorkspaceDto, userId?: number): Promise<Workspace> {
     return this.prisma.workspace.update({
       where: {
         id,
         teams: {
           every: {
-            userId: userId
+            userId: userId,
+            role: {
+              in: [WorkspaceRole.OWNER, WorkspaceRole.ADMIN]
+            }
           }
         }
       },
@@ -64,17 +63,44 @@ export class WorkspaceService {
     })
   }
 
-  remove(id: string, userId?: number): Promise<Workspace> {
-    return this.prisma.workspace.delete({
+  async remove(id: number, userId?: number) {
+    const workspace = await this.prisma.workspace.findFirst({
       where: {
-        id
+        id,
+        teams: {
+          every: {
+            userId: userId,
+            role: WorkspaceRole.OWNER
+          }
+        }
       }
     })
+
+    await this.prisma.$transaction([
+      // delete team
+      this.prisma.workspaceUser.deleteMany({
+        where: {
+          workspaceId: workspace.id
+        }
+      }),
+      // delete workspace
+      this.prisma.workspace.delete({
+        where: {
+          id: workspace.id
+        }
+      })
+    ])
   }
 
-  count(userId?: number): Promise<number> {
+  count(userId: number): Promise<number> {
     return this.prisma.workspace.count({
-      where: {}
+      where: {
+        teams: {
+          every: {
+            userId: userId
+          }
+        }
+      }
     })
   }
 }

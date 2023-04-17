@@ -41,7 +41,7 @@ model ForgetPassword {
 }
 
 model Workspace {
-  id                String            @id @default(uuid())
+  id                Int               @id @default(autoincrement())
   name              String
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
@@ -58,7 +58,7 @@ model Workspace {
 
 model Project {
   id          Int       @id @default(autoincrement())
-  workspaceId String
+  workspaceId Int
   name        String
   detail      String
   createdAt   DateTime  @default(now())
@@ -70,7 +70,7 @@ model Project {
 
 model WorkspaceUser {
   id          Int           @id @default(autoincrement())
-  workspaceId String
+  workspaceId Int
   userId      Int
   role        WorkspaceRole
   user        User          @relation(fields: [userId], references: [id])
@@ -81,7 +81,7 @@ model WorkspaceUser {
 
 model BillingCategory {
   id          Int       @id @default(autoincrement())
-  workspaceId String
+  workspaceId Int
   workspace   Workspace @relation(fields: [workspaceId], references: [id])
 
   @@map("billing_categories")
@@ -89,7 +89,7 @@ model BillingCategory {
 
 model Billing {
   id          Int       @id @default(autoincrement())
-  workspaceId String
+  workspaceId Int
   workspace   Workspace @relation(fields: [workspaceId], references: [id])
 
   @@map("billings")
@@ -97,7 +97,7 @@ model Billing {
 
 model Report {
   id          Int       @id @default(autoincrement())
-  workspaceId String
+  workspaceId Int
   workspace   Workspace @relation(fields: [workspaceId], references: [id])
 
   @@map("reports")
@@ -105,7 +105,7 @@ model Report {
 
 model ReportTracking {
   id          Int       @id @default(autoincrement())
-  workspaceId String
+  workspaceId Int
   workspace   Workspace @relation(fields: [workspaceId], references: [id])
 
   @@map("report_trackings")
@@ -114,7 +114,7 @@ model ReportTracking {
 model Notilfication {
   id          Int        @id @default(autoincrement())
   userId      Int
-  workspaceId String?
+  workspaceId Int?
   user        User       @relation(fields: [userId], references: [id])
   Workspace   Workspace? @relation(fields: [workspaceId], references: [id])
 

@@ -1,14 +1,25 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common'
+import { Reflector } from '@nestjs/core'
 import { JwtService } from '@nestjs/jwt'
+import { WorkspaceRole } from '@prisma/client'
 import { Request } from 'express'
 import { jwtConstants } from '../../auth/constants'
 import { TeamService } from '../team/team.service'
 
 @Injectable()
 export class WorkspaceGuard implements CanActivate {
-  constructor(private readonly jwtService: JwtService, private readonly teamService: TeamService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly reflector: Reflector,
+    private readonly teamService: TeamService
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    const checkRoles = this.reflector.getAllAndOverride<WorkspaceRole[]>('workspaceRole', [
+      context.getHandler(),
+      context.getClass()
+    ])
+
     const request = context.switchToHttp().getRequest()
     const token = this.extractTokenFromHeader(request)
 
@@ -16,9 +27,9 @@ export class WorkspaceGuard implements CanActivate {
       secret: jwtConstants.secret
     })
 
-    const workspaceId = request.params.wid
+    const workspaceId = Number(request?.params?.wid)
 
-    const check = await this.teamService.checkUser(workspaceId, payload.sub)
+    const check = await this.teamService.checkUser(workspaceId, payload.sub, checkRoles)
     if (check) {
       return true
     }

@@ -8,7 +8,7 @@ import { UpdateTeamDto } from '../dto/update-team.dto'
 export class TeamService {
   constructor(private prisma: PrismaService) {}
 
-  create(workspaceId: string, data: CreateTeamDto): Promise<WorkspaceUser> {
+  create(workspaceId: number, data: CreateTeamDto): Promise<WorkspaceUser> {
     return this.prisma.workspaceUser.create({
       data: {
         workspaceId: workspaceId,
@@ -17,7 +17,7 @@ export class TeamService {
     })
   }
 
-  findAll(workspaceId: string, page: number, limit: number): Promise<WorkspaceUser[]> {
+  findAll(workspaceId: number, page: number, limit: number): Promise<WorkspaceUser[]> {
     const skip: number = page == 0 ? 1 : limit * (page - 1)
     return this.prisma.workspaceUser.findMany({
       where: {
@@ -28,7 +28,7 @@ export class TeamService {
     })
   }
 
-  findOne(workspaceId: string, id: number): Promise<WorkspaceUser> {
+  findOne(workspaceId: number, id: number): Promise<WorkspaceUser> {
     return this.prisma.workspaceUser.findFirstOrThrow({
       where: {
         workspaceId: workspaceId,
@@ -37,7 +37,7 @@ export class TeamService {
     })
   }
 
-  update(workspaceId: string, id: number, data: UpdateTeamDto): Promise<WorkspaceUser> {
+  update(workspaceId: number, id: number, data: UpdateTeamDto): Promise<WorkspaceUser> {
     return this.prisma.workspaceUser.update({
       where: {
         workspaceId: workspaceId,
@@ -47,7 +47,7 @@ export class TeamService {
     })
   }
 
-  remove(workspaceId: string, id: number): Promise<WorkspaceUser> {
+  remove(workspaceId: number, id: number): Promise<WorkspaceUser> {
     return this.prisma.workspaceUser.delete({
       where: {
         workspaceId: workspaceId,
@@ -56,7 +56,7 @@ export class TeamService {
     })
   }
 
-  count(workspaceId: string): Promise<number> {
+  count(workspaceId: number): Promise<number> {
     return this.prisma.workspaceUser.count({
       where: {
         workspaceId: workspaceId
@@ -64,17 +64,16 @@ export class TeamService {
     })
   }
 
-  async checkUser(workspaceId: string, userId: number, role?: WorkspaceRole): Promise<boolean> {
+  async checkUser(workspaceId: number, userId: number, roles?: WorkspaceRole[]): Promise<boolean> {
     const user: WorkspaceUser = await this.prisma.workspaceUser.findFirst({
       where: {
         workspaceId: workspaceId,
         userId: userId,
         role: {
-          in: role
+          in: roles
         }
       }
     })
-    console.log('xxx', user)
     return user ? true : false
   }
 }

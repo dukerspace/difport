@@ -13,16 +13,18 @@ import {
   Res,
   UseGuards
 } from '@nestjs/common'
+import { WorkspaceRole } from '@prisma/client'
 import { Response } from 'express'
 import { AuthGuard } from '../auth/guards/auth.guard'
 import { IRequestWithUser } from '../auth/interfaces/user.interface'
-import { ResponseData } from '../utils/response'
+import { MSG_DELETE_SUCCESS, MSG_WORKSPACE_NOT_FOUND } from '../utils/constant'
+import { ResponseData, ResponsePaginate } from '../utils/response'
+import { WorkspaceUserRole } from './decorators/workspace.decorator'
 import { CreateWorkspaceDto } from './dto/create-workspace.dto'
 import { UpdateWorkspaceDto } from './dto/update-workspace.dto'
-import { WorkspaceGuard } from './guards/workspace.guard'
 import { WorkspaceService } from './workspace.service'
 
-@UseGuards(AuthGuard, WorkspaceGuard)
+@UseGuards(AuthGuard)
 @Controller('workspaces')
 export class WorkspaceController {
   constructor(private readonly workspaceService: WorkspaceService) {}
@@ -46,6 +48,7 @@ export class WorkspaceController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Get()
   async findAll(
     @Req() req: IRequestWithUser,
@@ -54,9 +57,12 @@ export class WorkspaceController {
     @Query('limit') limit: number
   ) {
     try {
+      const currentPage = page ? page : 1
+      const perPage = limit ? limit : 50
       const userId = req.user.id
-      const query = await this.workspaceService.findAll(+page || 1, +limit || 50, userId)
-      const response = new ResponseData(true, query)
+      const query = await this.workspaceService.findAll(currentPage, perPage, userId)
+      const total = await this.workspaceService.count(userId)
+      const response = new ResponsePaginate(true, query, currentPage, perPage, total)
       res.status(HttpStatus.OK).json(response)
     } catch (error) {
       const message = {
@@ -66,10 +72,14 @@ export class WorkspaceController {
     }
   }
 
+  @WorkspaceUserRole([WorkspaceRole.OWNER, WorkspaceRole.ADMIN])
   @Get(':wid')
-  async findOne(@Req() req: IRequestWithUser, @Res() res: Response, @Param('id') wid: string) {
+  async findOne(@Req() req: IRequestWithUser, @Res() res: Response, @Param('wid') wid: number) {
     try {
-      const query = await this.workspaceService.findOne(wid)
+      const query = await this.workspaceService.findOne(+wid)
+      if (!query) {
+        throw new HttpException(MSG_WORKSPACE_NOT_FOUND, HttpStatus.BAD_REQUEST)
+      }
       const response = new ResponseData(true, query)
       res.status(HttpStatus.OK).json(response)
     } catch (error) {
@@ -80,16 +90,21 @@ export class WorkspaceController {
     }
   }
 
+  @WorkspaceUserRole([WorkspaceRole.OWNER, WorkspaceRole.ADMIN])
   @Patch(':wid')
   async update(
     @Req() req: IRequestWithUser,
     @Res() res: Response,
-    @Param('wid') wid: string,
+    @Param('wid') wid: number,
     @Body() body: UpdateWorkspaceDto
   ) {
     try {
+      const check = await this.workspaceService.findOne(+wid)
+      if (!check) {
+        throw new HttpException(MSG_WORKSPACE_NOT_FOUND, HttpStatus.BAD_REQUEST)
+      }
       const userId = req.user.id
-      const query = await this.workspaceService.update(wid, body, userId)
+      const query = await this.workspaceService.update(+wid, body, userId)
       const response = new ResponseData(true, query)
       res.status(HttpStatus.OK).json(response)
     } catch (error) {
@@ -100,12 +115,17 @@ export class WorkspaceController {
     }
   }
 
+  @WorkspaceUserRole([WorkspaceRole.OWNER, WorkspaceRole.ADMIN])
   @Delete(':wid')
-  async remove(@Req() req: IRequestWithUser, @Res() res: Response, @Param('id') wid: string) {
+  async remove(@Req() req: IRequestWithUser, @Res() res: Response, @Param('wid') wid: number) {
     try {
+      const check = await this.workspaceService.findOne(+wid)
+      if (!check) {
+        throw new HttpException(MSG_WORKSPACE_NOT_FOUND, HttpStatus.BAD_REQUEST)
+      }
       const userId = req.user.id
-      const query = await this.workspaceService.remove(wid, userId)
-      const response = new ResponseData(true, query)
+      await this.workspaceService.remove(+wid, userId)
+      const response = new ResponseData(true, false, MSG_DELETE_SUCCESS)
       res.status(HttpStatus.OK).json(response)
     } catch (error) {
       const message = {

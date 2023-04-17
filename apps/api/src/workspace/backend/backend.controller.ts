@@ -42,9 +42,14 @@ export class AdminController {
   }
 
   @Get()
-  async findAll(@Res() res: Response, @Query('page') page: number, @Query('limit') limit: number) {
+  async findAll(
+    @Res() res: Response,
+    @Param('id') id: number,
+    @Query('page') page: number,
+    @Query('limit') limit: number
+  ) {
     try {
-      const query = await this.workspaceService.findAll(1, page, limit)
+      const query = await this.workspaceService.findAll(+id, page, limit)
       const response = new ResponseData(true, query)
       res.status(HttpStatus.OK).json(response)
     } catch (error) {
@@ -56,9 +61,9 @@ export class AdminController {
   }
 
   @Get(':id')
-  async findOne(@Res() res: Response, @Param('id') id: string) {
+  async findOne(@Res() res: Response, @Param('id') id: number) {
     try {
-      const query = await this.workspaceService.findOne(id)
+      const query = await this.workspaceService.findOne(+id)
       const response = new ResponseData(true, query)
       res.status(HttpStatus.OK).json(response)
     } catch (error) {
@@ -70,9 +75,9 @@ export class AdminController {
   }
 
   @Patch(':id')
-  async update(@Res() res: Response, @Param('id') id: string, @Body() body: UpdateWorkspaceDto) {
+  async update(@Res() res: Response, @Param('id') id: number, @Body() body: UpdateWorkspaceDto) {
     try {
-      const query = await this.workspaceService.update(id, body)
+      const query = await this.workspaceService.update(+id, body)
       const response = new ResponseData(true, query)
       res.status(HttpStatus.OK).json(response)
     } catch (error) {
@@ -84,9 +89,9 @@ export class AdminController {
   }
 
   @Delete(':id')
-  async remove(@Res() res: Response, @Param('id') id: string) {
+  async remove(@Res() res: Response, @Param('id') id: number) {
     try {
-      const query = await this.workspaceService.remove(id)
+      const query = await this.workspaceService.remove(+id)
       const response = new ResponseData(true, query)
       res.status(HttpStatus.OK).json(response)
     } catch (error) {

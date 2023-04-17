@@ -31,17 +31,17 @@ export class TeamController {
   async create(
     @Req() req: IRequestWithUser,
     @Res() res: Response,
-    @Param('wid') wid: string,
+    @Param('wid') wid: number,
     @Body() body: CreateTeamDto
   ) {
     try {
       const userId = body.userId
-      const check = await this.teamService.checkUser(wid, userId)
+      const check = await this.teamService.checkUser(+wid, userId)
       if (check) {
         throw new HttpException('User is exist', HttpStatus.BAD_REQUEST)
       }
 
-      const query = await this.teamService.create(wid, body)
+      const query = await this.teamService.create(+wid, body)
       const response = new ResponseData(true, query)
       res.status(HttpStatus.OK).json(response)
     } catch (error) {
@@ -56,12 +56,12 @@ export class TeamController {
   async findAll(
     @Req() req: IRequestWithUser,
     @Res() res: Response,
-    @Param('wid') wid: string,
+    @Param('wid') wid: number,
     @Query('page') page: number,
     @Query('limit') limit: number
   ) {
     try {
-      const query = await this.teamService.findAll(wid, +page || 1, +limit || 50)
+      const query = await this.teamService.findAll(+wid, +page || 1, +limit || 50)
       const response = new ResponseData(true, query)
       res.status(HttpStatus.OK).json(response)
     } catch (error) {
@@ -76,11 +76,11 @@ export class TeamController {
   async findOne(
     @Req() req: IRequestWithUser,
     @Res() res: Response,
-    @Param('wid') wid: string,
+    @Param('wid') wid: number,
     @Param('teamId') teamId: number
   ) {
     try {
-      const query = await this.teamService.findOne(wid, +teamId)
+      const query = await this.teamService.findOne(+wid, +teamId)
       if (!query) {
         throw new HttpException('User is not exits', HttpStatus.BAD_REQUEST)
       }
@@ -98,17 +98,17 @@ export class TeamController {
   async update(
     @Req() req: IRequestWithUser,
     @Res() res: Response,
-    @Param('wid') wid: string,
+    @Param('wid') wid: number,
     @Param('teamId') teamId: number,
     @Body() body: UpdateTeamDto
   ) {
     try {
-      const check = await this.teamService.findOne(wid, +teamId)
+      const check = await this.teamService.findOne(+wid, +teamId)
       if (!check) {
         throw new HttpException('User is not exits', HttpStatus.BAD_REQUEST)
       }
 
-      const query = await this.teamService.update(wid, +teamId, body)
+      const query = await this.teamService.update(+wid, +teamId, body)
       const response = new ResponseData(true, query)
       res.status(HttpStatus.OK).json(response)
     } catch (error) {
@@ -123,16 +123,16 @@ export class TeamController {
   async remove(
     @Req() req: IRequestWithUser,
     @Res() res: Response,
-    @Param('wid') wid: string,
+    @Param('wid') wid: number,
     @Param('teamId') teamId: number
   ) {
     try {
-      const check = await this.teamService.findOne(wid, +teamId)
+      const check = await this.teamService.findOne(+wid, +teamId)
       if (!check) {
         throw new HttpException('User is not exits', HttpStatus.BAD_REQUEST)
       }
 
-      const query = await this.teamService.remove(wid, +teamId)
+      await this.teamService.remove(+wid, +teamId)
       const response = new ResponseData(true, null, MSG_DELETE_SUCCESS)
       res.status(HttpStatus.OK).json(response)
     } catch (error) {
