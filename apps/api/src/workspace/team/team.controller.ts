@@ -18,8 +18,8 @@ import { IRequestWithUser } from 'src/auth/interfaces/user.interface'
 import { ResponseData } from 'src/utils/response'
 import { MSG_DELETE_SUCCESS } from '../../utils/constant'
 import { WorkspaceUserRole } from '../decorators/workspace.decorator'
-import { CreateTeamDto } from '../dto/create-team.dto'
-import { UpdateTeamDto } from '../dto/update-team.dto'
+import { UpdateTeamDto } from '../workspace/dto/update-team.dto'
+import { CreateTeamDto } from './dto/create-team.dto'
 import { TeamService } from './team.service'
 
 @WorkspaceUserRole([WorkspaceRole.OWNER, WorkspaceRole.ADMIN])
