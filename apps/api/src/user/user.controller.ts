@@ -53,8 +53,7 @@ export class UserController {
       }
       const query = await this.userService.create(data)
       const response = new ResponseData(true, query)
-      res.status(322).json
-      res.status(HttpStatus.OK).json(response)
+      res.status(HttpStatus.CREATED).json(response)
     } catch (error) {
       const message = {
         message: error.message

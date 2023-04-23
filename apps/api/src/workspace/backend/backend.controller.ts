@@ -32,7 +32,7 @@ export class AdminController {
     try {
       const query = await this.workspaceService.create(body)
       const response = new ResponseData(true, query)
-      res.status(HttpStatus.OK).json(response)
+      res.status(HttpStatus.CREATED).json(response)
     } catch (error) {
       const message = {
         message: error.message

@@ -6,7 +6,7 @@ import { UpdateWorkspaceDto } from './dto/update-workspace.dto'
 
 @Injectable()
 export class WorkspaceService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   create(data: CreateWorkspaceDto, userId?: number): Promise<Workspace> {
     return this.prisma.workspace.create({
@@ -92,14 +92,18 @@ export class WorkspaceService {
     ])
   }
 
-  count(userId: number): Promise<number> {
+  count(id: number): Promise<number> {
     return this.prisma.workspace.count({
       where: {
-        teams: {
-          every: {
-            userId: userId
-          }
-        }
+        id: id
+      }
+    })
+  }
+
+  checkWorkspace(id: number): Promise<Workspace> {
+    return this.prisma.workspace.findFirstOrThrow({
+      where: {
+        id: id
       }
     })
   }

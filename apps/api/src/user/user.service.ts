@@ -59,7 +59,10 @@ export class UserService {
       where: {
         id
       },
-      data
+      data: {
+        firstName: data.firstName,
+        lastName: data.lastName
+      }
     })
   }
 

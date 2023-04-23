@@ -3,18 +3,21 @@ import { NestFactory } from '@nestjs/core'
 import { ValidationError } from 'class-validator'
 import { json, urlencoded } from 'express'
 import { AppModule } from './app.module'
+import { IErrorMessage } from './utils/response'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {})
 
   app.useGlobalPipes(
     new ValidationPipe({
+      forbidUnknownValues: false,
       exceptionFactory: (validationErrors: ValidationError[] = []) => {
         const msg = validationErrors.map((error: ValidationError) => {
-          return {
-            field: error.property,
+          const response: IErrorMessage = {
+            field: error?.property,
             message: Object.values(error.constraints)
           }
+          return response
         })
 
         return msg

@@ -39,7 +39,7 @@ export class WorkspaceController {
       const userId = req.user.id
       const query = await this.workspaceService.create(body, userId)
       const response = new ResponseData(true, query)
-      res.status(HttpStatus.OK).json(response)
+      res.status(HttpStatus.CREATED).json(response)
     } catch (error) {
       const message = {
         message: error.message

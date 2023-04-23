@@ -10,7 +10,7 @@ import { ForgetPasswordDto } from './dto/forget-password.dto'
 import { ResetPasswordDto } from './dto/reset-password.dto'
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService, private jwtService: JwtService) {}
+  constructor(private readonly prisma: PrismaService, private readonly jwtService: JwtService) {}
 
   async validateUser(auth: AuthDTO): Promise<IAuth> {
     const user = await this.prisma.user.findFirst({

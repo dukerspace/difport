@@ -1,8 +1,8 @@
 # Add files here to ignore them from prettier formatting
 
-/dist
-/coverage
-/.turbo
-/node_modules
+**/dist
+**/coverage
+**/.turbo
+**/node_modules
 
 package.json

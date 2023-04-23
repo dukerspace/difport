@@ -9,21 +9,27 @@ datasource db {
 }
 
 model User {
-  id             Int              @id @default(autoincrement())
-  username       String           @unique
-  email          String           @unique
-  password       String
-  firstName      String?
-  lastName       String?
-  createdAt      DateTime         @default(now())
-  failLoginCount Int
-  updatedAt      DateTime         @updatedAt
-  isDeleted      Boolean          @default(false)
-  role           Role
-  ForgetPassword ForgetPassword[]
-  notifications  Notilfication[]
-  workspaces     WorkspaceUser[]
+  id               Int              @id @default(autoincrement())
+  username         String           @db.VarChar(255)
+  email            String
+  password         String
+  firstName        String?          @db.VarChar(255)
+  lastName         String?          @db.VarChar(255)
+  createdAt        DateTime         @default(now())
+  failLoginCount   Int
+  updatedAt        DateTime         @updatedAt
+  isDeleted        Boolean          @default(false)
+  role             Role
+  ForgetPassword   ForgetPassword[]
+  notifications    Notilfication[]
+  workspaces       WorkspaceUser[]
+  Report           Report[]
+  File             File[]
+  reportWorkflowId Int?
+  reportWorkflow   ReportWorkflow?  @relation(fields: [reportWorkflowId], references: [id])
+  ReportApproval   ReportApproval[]
 
+  @@unique([username, email])
   @@index([email, username])
   @@map("users")
 }
@@ -42,39 +48,29 @@ model ForgetPassword {
 
 model Workspace {
   id                Int               @id @default(autoincrement())
-  name              String
+  name              String            @db.VarChar(255)
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
   billingCategories BillingCategory[]
   billings          Billing[]
   notilfications    Notilfication[]
-  projects          Project[]
-  reportTrackings   ReportTracking[]
   report            Report[]
+  approvals         ReportApproval[]
   teams             WorkspaceUser[]
+  File              File[]
+  ReportCategory    ReportCategory[]
+  ReportWorkflow    ReportWorkflow[]
 
   @@map("workspaces")
-}
-
-model Project {
-  id          Int       @id @default(autoincrement())
-  workspaceId Int
-  name        String
-  detail      String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  workspace   Workspace @relation(fields: [workspaceId], references: [id])
-
-  @@map("projects")
 }
 
 model WorkspaceUser {
   id          Int           @id @default(autoincrement())
   workspaceId Int
-  userId      Int
-  role        WorkspaceRole
-  user        User          @relation(fields: [userId], references: [id])
   workspace   Workspace     @relation(fields: [workspaceId], references: [id])
+  userId      Int
+  user        User          @relation(fields: [userId], references: [id])
+  role        WorkspaceRole
 
   @@map("workspace_users")
 }
@@ -95,20 +91,85 @@ model Billing {
   @@map("billings")
 }
 
-model Report {
-  id          Int       @id @default(autoincrement())
+model ReportCategory {
+  id          Int              @id @default(autoincrement())
   workspaceId Int
-  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspace   Workspace        @relation(fields: [workspaceId], references: [id])
+  name        String
+  Report      Report[]
+  workflows   ReportWorkflow[]
+
+  @@map("report_categories")
+}
+
+model ReportWorkflow {
+  id          Int              @id @default(autoincrement())
+  name        String
+  workspaceId Int
+  workspace   Workspace        @relation(fields: [workspaceId], references: [id])
+  users       User[]
+  categories  ReportCategory[]
+
+  @@map("report_workflows")
+}
+
+model Report {
+  id          Int              @id @default(autoincrement())
+  workspaceId Int?
+  workspace   Workspace?       @relation(fields: [workspaceId], references: [id])
+  userId      Int?
+  user        User?            @relation(fields: [userId], references: [id])
+  title       String
+  description String
+  mapLat      Float?
+  mapLng      Float?
+  reportLevel Int?
+  step        Int
+  status      ReportStatus
+  published   Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  categories  ReportCategory[]
+  approvals   ReportApproval[]
+  images      File[]
 
   @@map("reports")
 }
 
-model ReportTracking {
-  id          Int       @id @default(autoincrement())
+model ReportApproval {
+  id          Int                  @id @default(autoincrement())
+  reportId    Int
+  report      Report               @relation(fields: [reportId], references: [id])
   workspaceId Int
-  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspace   Workspace            @relation(fields: [workspaceId], references: [id])
+  userId      Int
+  user        User                 @relation(fields: [userId], references: [id])
+  description String
+  status      ReportApprovalStatus
+  step        Int
+  isHistory   Boolean
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime
+  images      File[]
 
-  @@map("report_trackings")
+  @@map("report_approvals")
+}
+
+model File {
+  id               Int             @id @default(autoincrement())
+  workspaceId      Int?
+  workspace        Workspace?      @relation(fields: [workspaceId], references: [id])
+  userId           Int?
+  user             User?           @relation(fields: [userId], references: [id])
+  fileName         String
+  ext              String
+  path             String
+  fullPath         String
+  reports          Report[]
+  ReportApproval   ReportApproval? @relation(fields: [reportApprovalId], references: [id])
+  reportApprovalId Int?
+
+  @@map("files")
 }
 
 model Notilfication {
@@ -130,9 +191,23 @@ enum WorkspaceRole {
   OWNER
   ADMIN
   USER
+  NORM
 }
 
 enum ReprotType {
   NORMAL
   EVENT
+}
+
+enum ReportStatus {
+  WAITING
+  RE_OPEN
+  IN_PROGRESS
+  DONE
+  ARCHIVED
+}
+
+enum ReportApprovalStatus {
+  WAITING
+  APPROVED
 }
