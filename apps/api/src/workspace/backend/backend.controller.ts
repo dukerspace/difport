@@ -17,9 +17,9 @@ import { Role } from '@prisma/client'
 import { Response } from 'express'
 import { UserRole } from '../../auth/decorators/role.decorator'
 import { ResponseData } from '../../utils/response'
-import { WorkspaceService } from '../workspace.service'
 import { CreateWorkspaceDto } from '../workspace/dto/create-workspace.dto'
 import { UpdateWorkspaceDto } from '../workspace/dto/update-workspace.dto'
+import { WorkspaceService } from '../workspace/workspace.service'
 
 @UserRole(Role.ADMIN)
 @UseGuards(AuthGuard)

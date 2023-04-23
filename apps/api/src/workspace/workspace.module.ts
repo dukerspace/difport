@@ -5,8 +5,8 @@ import { PrismaModule } from '../prisma/prisma.module'
 import { UserModule } from '../user/user.module'
 import { TeamController } from './team/team.controller'
 import { TeamService } from './team/team.service'
-import { WorkspaceController } from './workspace.controller'
-import { WorkspaceService } from './workspace.service'
+import { WorkspaceController } from './workspace/workspace.controller'
+import { WorkspaceService } from './workspace/workspace.service'
 
 @Module({
   imports: [PrismaModule, JwtModule, UserModule],

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { Workspace, WorkspaceRole } from '@prisma/client'
-import { PrismaService } from '../prisma/prisma.service'
+import { PrismaService } from '../../prisma/prisma.service'
 import { CreateWorkspaceDto } from './dto/create-workspace.dto'
 import { UpdateWorkspaceDto } from './dto/update-workspace.dto'
 

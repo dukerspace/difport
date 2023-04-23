@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { WorkspaceRole, WorkspaceUser } from '@prisma/client'
 import { PrismaService } from '../../prisma/prisma.service'
-import { UpdateTeamDto } from '../workspace/dto/update-team.dto'
 import { CreateTeamDto } from './dto/create-team.dto'
+import { UpdateTeamDto } from './dto/update-team.dto'
 
 @Injectable()
 export class TeamService {
