@@ -12,14 +12,14 @@ export class ReportService {
     const { categories, ...insert } = data
     return this.prisma.report.create({
       data: {
+        ...insert,
         workspaceId: workspaceId,
         userId: userId,
         status: ReportStatus.WAITING,
         step: 1,
         categories: {
           connect: data.categories
-        },
-        ...insert
+        }
       },
       include: {
         categories: true
@@ -61,10 +61,10 @@ export class ReportService {
         id: id
       },
       data: {
+        ...update,
         categories: {
           set: categories
-        },
-        ...update
+        }
       },
       include: {
         categories: true

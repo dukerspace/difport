@@ -1,6 +1,6 @@
 import { Body, Controller, HttpException, HttpStatus, Post, Res } from '@nestjs/common'
 import { ForgetPassword } from '@prisma/client'
-import { IAuth } from 'difport-interface'
+import { IAuthResponse } from 'difport-interface'
 import { Response } from 'express'
 import { ResponseData } from '../utils/response'
 import { AuthService } from './auth.service'
@@ -17,7 +17,7 @@ export class AuthController {
   async auth(@Res() res: Response, @Body() body: AuthDTO) {
     try {
       const data = await this.authService.validateUser(body)
-      const result: ResponseData<IAuth> = {
+      const result: ResponseData<IAuthResponse> = {
         success: true,
         data: data
       }

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { User } from '@prisma/client'
 import { compare, hashSync } from 'bcrypt'
-import { IAuth } from 'difport-interface'
+import { IAuthResponse } from 'difport-interface'
 import { nanoid } from 'nanoid/non-secure'
 import { PrismaService } from '../prisma/prisma.service'
 import { AuthDTO } from './dto/auth.dto'
@@ -12,7 +12,7 @@ import { ResetPasswordDto } from './dto/reset-password.dto'
 export class AuthService {
   constructor(private readonly prisma: PrismaService, private readonly jwtService: JwtService) {}
 
-  async validateUser(auth: AuthDTO): Promise<IAuth> {
+  async validateUser(auth: AuthDTO): Promise<IAuthResponse> {
     const user = await this.prisma.user.findFirst({
       where: {
         username: auth.username
