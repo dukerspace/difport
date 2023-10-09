@@ -1,6 +1,9 @@
 import { Controller, Get, HttpStatus, Res } from '@nestjs/common'
 import { Response } from 'express'
-import { IHealth } from './health.interface'
+
+interface IHealth {
+  message: string
+}
 
 @Controller('healthz')
 export class HealthController {
