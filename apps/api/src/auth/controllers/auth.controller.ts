@@ -1,13 +1,11 @@
 import { Body, Controller, HttpException, HttpStatus, Post, Res } from '@nestjs/common'
 import { ForgetPassword } from '@prisma/client'
-import { IAuthResponse } from 'difport-interface'
+import { AuthDTO, ForgetPasswordDto, IAuthResponse, ResetPasswordDto } from 'difport-interface'
 import { Response } from 'express'
-import { ResponseData } from '../utils/response'
-import { AuthService } from './auth.service'
-import { Public } from './decorators/public.decorator'
-import { AuthDTO } from './dto/auth.dto'
-import { ForgetPasswordDto } from './dto/forget-password.dto'
-import { ResetPasswordDto } from './dto/reset-password.dto'
+import { ResponseData } from '../../utils/response'
+import { Public } from '../decorators/public.decorator'
+import { AuthService } from '../services/auth.service'
+
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

@@ -2,12 +2,10 @@ import { Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { User } from '@prisma/client'
 import { compare, hashSync } from 'bcrypt'
-import { IAuthResponse } from 'difport-interface'
+import { AuthDTO, ForgetPasswordDto, IAuthResponse, ResetPasswordDto } from 'difport-interface'
 import { nanoid } from 'nanoid/non-secure'
-import { PrismaService } from '../prisma/prisma.service'
-import { AuthDTO } from './dto/auth.dto'
-import { ForgetPasswordDto } from './dto/forget-password.dto'
-import { ResetPasswordDto } from './dto/reset-password.dto'
+import { PrismaService } from '../../prisma/prisma.service'
+
 @Injectable()
 export class AuthService {
   constructor(private readonly prisma: PrismaService, private readonly jwtService: JwtService) {}
