@@ -191,7 +191,7 @@ enum WorkspaceRole {
   OWNER
   ADMIN
   USER
-  NORM
+  NORMAL
 }
 
 enum ReprotType {
