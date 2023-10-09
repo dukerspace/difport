@@ -6,6 +6,15 @@
   "scripts": {
     "build": "rm -rf dist && tsc"
   },
+  "dependencies": {
+    "@nestjs/common": "9.0.0",
+    "@nestjs/core": "9.0.0",
+    "@nestjs/mapped-types": "^0.0.1",
+    "@nestjs/swagger": "^7.1.8",
+    "class-validator": "0.14.0",
+    "reflect-metadata": "0.1.13",
+    "rxjs": "7.2.0"
+  },
   "devDependencies": {
     "typescript": "^4.7.4"
   },

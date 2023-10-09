@@ -1,3 +1,5 @@
+import { IsString } from 'class-validator'
+
 export interface IAuthRequest {
   username: string
   password: string
@@ -15,4 +17,12 @@ export interface IUserInfo {
   email: string
   firstName: string
   lastName: string
+}
+
+export class AuthDTO {
+  @IsString()
+  username: string
+
+  @IsString()
+  password: string
 }
